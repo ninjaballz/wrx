@@ -16,8 +16,8 @@
 # Modify default theme
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
-sed -i "s|DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION=\"LEDE R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/etc/openwrt_release
-sed -i "s|OPENWRT_RELEASE=.*|OPENWRT_RELEASE=\"LEDE R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/usr/lib/os-release
+sed -i "s|DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION=\"Immortalwrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/etc/openwrt_release
+sed -i "s|OPENWRT_RELEASE=.*|OPENWRT_RELEASE=\"Immortalwrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/usr/lib/os-release
 
 
 sed -i "s/timezone='.*'/timezone='CST-8'/g" package/base-files/files/bin/config_generate
