@@ -1,15 +1,3 @@
-#
-# https://github.com/P3TERX/Actions-OpenWrt
-#
-# File: .github/workflows/openwrt-bulder.yml
-# Description: Build OpenWrt using GitHub Actions
-#
-# Copyright (c) 2019-2024 P3TERX <https://p3terx.com>
-#
-# This is free software, licensed under the MIT License.
-# See /LICENSE for more information.
-#
-
 name: OpenWrt Builder
 
 on:
@@ -36,26 +24,55 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
-    - name: Initialization environment
+    - name: Aggressive Cleanup & Env Setup
       env:
         DEBIAN_FRONTEND: noninteractive
       run: |
-        sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-        sudo docker image prune --all --force
+        echo "=== Initial Disk Space ==="
+        df -hT
+
+        echo "=== Remove Unnecessary SDKs and Tools ==="
+        sudo rm -rf /usr/local/lib/android \
+                    /usr/share/dotnet \
+                    /opt/ghc \
+                    /opt/hostedtoolcache \
+                    /opt/microsoft \
+                    /opt/az \
+                    "$AGENT_TOOLSDIRECTORY" \
+                    /usr/local/share/boost \
+                    /usr/lib/jvm
+
+        echo "=== Docker Cleanup ==="
+        docker system prune -a -f
+        docker builder prune -a -f
+        docker volume prune -f
+        docker network prune -f
+
+        echo "=== APT Cleanup ==="
+        sudo apt-get remove -y '^aspnetcore-.*' '^dotnet-.*' '^llvm-.*' '^php.*' '^mongodb-.*' '^mysql-.*' '^postgresql-.*' || true
+        sudo apt-get autoremove -y
+        sudo apt-get clean
+        sudo rm -rf /var/lib/apt/lists/*
+
+        echo "=== Install Required Build Dependencies ==="
         sudo -E apt-get -qq update
         sudo -E apt-get -qq install ack antlr3 asciidoc autoconf automake autopoint binutils bison build-essential bzip2 ccache cmake cpio curl device-tree-compiler fastjar flex gawk gettext gcc-multilib g++-multilib git gperf haveged help2man intltool libc6-dev-i386 libelf-dev libfuse-dev libglib2.0-dev libgmp3-dev libltdl-dev libmpc-dev libmpfr-dev libncurses5-dev libncursesw5-dev libpython3-dev libreadline-dev libssl-dev libtool lrzsz mkisofs msmtp ninja-build p7zip p7zip-full patch pkgconf python2.7 python3 python3-pyelftools python3-setuptools qemu-utils rsync scons squashfs-tools subversion swig texinfo uglifyjs upx-ucl unzip vim wget xmlto xxd zlib1g-dev
-        sudo -E apt-get -qq autoremove --purge
-        sudo -E apt-get -qq clean
+
+        echo "=== Set Timezone and Workspace ==="
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
 
+        echo "=== Disk Space After Cleanup ==="
+        df -hT
+
     - name: Clone source code
       working-directory: /workdir
       run: |
-        df -hT $PWD
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+        df -hT
+
     - name: Cache
       uses: stupidloud/cachewrtbuild@main
       with:
@@ -89,7 +106,6 @@ jobs:
         cd openwrt
         make defconfig
         make download -j8
-        find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
     - name: Compile the firmware
@@ -102,6 +118,13 @@ jobs:
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=_$(date +"%Y%m%d%H%M")" >> $GITHUB_ENV
+
+    - name: Clean OpenWrt build temp files
+      if: steps.compile.outputs.status == 'success'
+      run: |
+        cd openwrt
+        rm -rf tmp build_dir staging_dir dl
+        df -hT
 
     - name: Check space usage
       if: (!cancelled())
@@ -136,7 +159,6 @@ jobs:
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
         touch release.txt
-        [ ${UPLOAD_GOFILE} = true && ${{ steps.gofile.outputs.url }} ] && echo "🔗 [GoFile](${{ steps.gofile.outputs.url }})" >> release.txt
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware to release
