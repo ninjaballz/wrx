@@ -24,6 +24,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@main
 
+    - name: Cleanup previous build
+      run: |
+        echo "Cleaning up previous build directories..."
+        rm -rf openwrt
+        rm -rf /workdir/openwrt
+        rm -rf /workdir/tmp /workdir/build_dir /workdir/staging_dir /workdir/dl
+        df -hT
+
     - name: Clone source code
       working-directory: /workdir
       run: |
