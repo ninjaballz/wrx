@@ -32,8 +32,8 @@ sed -i '/set wireless.default_radio${devidx}.encryption=psk2/a \\t\tset wireless
 sed -i "s|DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION=\"NiggaWrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/etc/openwrt_release
 sed -i "s|OPENWRT_RELEASE=.*|OPENWRT_RELEASE=\"NiggaWrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/usr/lib/os-release
 
-sed -i '/CPU usage/a\
-                <tr><td width="33%">Compiled by</td><td>QQ: 811773221</td></tr>' package/lean/autocore/files/arm/index.htm
+sed -i '/CPU usage/a\                <tr><td width="33\%"><\%:最新固件\%></td><td><a target="_blank" href="https://github.com/ninjaballz/wrx/releases">👇查看</a></td></tr>' package/lean/autocore/files/arm/index.htm
+sed -i '/CPU usage/a\                <tr><td width="33%\"><%:最新固件%></td><td><a target="_blank" href="https://github.com/ninjaballz/wrx/releases">👇查看</a></td></tr>' package/lean/autocore/files/arm/index.htm
 
 
 sed -i "s/timezone='.*'/timezone='CST-8'/g" package/base-files/files/bin/config_generate
