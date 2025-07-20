@@ -29,8 +29,8 @@ sed -i '/set wireless.default_radio${devidx}.encryption=psk2/a \\t\tset wireless
 # Modify default theme
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
-sed -i "s|DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION=\"Immortalwrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/etc/openwrt_release
-sed -i "s|OPENWRT_RELEASE=.*|OPENWRT_RELEASE=\"Immortalwrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/usr/lib/os-release
+sed -i "s|DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION=\"NiggaWrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/etc/openwrt_release
+sed -i "s|OPENWRT_RELEASE=.*|OPENWRT_RELEASE=\"NiggaWrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/usr/lib/os-release
 
 sed -i '/CPU usage/a\
                 <tr><td width="33%">Compiled by</td><td>QQ: 811773221</td></tr>' package/lean/autocore/files/arm/index.htm
