@@ -13,11 +13,27 @@
 # Modify default IP
 #sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
 
+sed -i 's/LEDE/Hynix/g' package/base-files/files/bin/config_generate
+sed -i 's/LEDE/Hynix/g' package/base-files/luci2/bin/config_generate
+
+# 修改 WiFi 名称（SSID）从 LEDE → Hynix
+sed -i 's/set wireless.default_radio${devidx}.ssid=LEDE/set wireless.default_radio${devidx}.ssid=Hynix/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+
+# 修改加密方式 (none → psk2)
+sed -i 's/set wireless.default_radio${devidx}.encryption=none/set wireless.default_radio${devidx}.encryption=psk2/' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+
+# 在加密行后新增密码行 (确保格式对齐)
+sed -i '/set wireless.default_radio${devidx}.encryption=psk2/a \\t\tset wireless.default_radio${devidx}.key=888vxzss' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+
+
 # Modify default theme
 #sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 sed -i "s|DISTRIB_DESCRIPTION=.*|DISTRIB_DESCRIPTION=\"Immortalwrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/etc/openwrt_release
 sed -i "s|OPENWRT_RELEASE=.*|OPENWRT_RELEASE=\"Immortalwrt R$(TZ=UTC-8 date +'%y.%m.%d') (By @SxLvIo build $(TZ=UTC-8 date '+%Y-%m-%d %H:%M'))\"|g" package/base-files/files/usr/lib/os-release
+
+sed -i '/CPU usage/a\
+                <tr><td width="33%">Compiled by</td><td>QQ: 811773221</td></tr>' package/lean/autocore/files/arm/index.htm
 
 
 sed -i "s/timezone='.*'/timezone='CST-8'/g" package/base-files/files/bin/config_generate
