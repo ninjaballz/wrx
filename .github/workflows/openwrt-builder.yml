@@ -118,14 +118,22 @@ jobs:
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       run: |
         echo "release_tag=$(date +"%Y.%m.%d-%H%M")" >> $GITHUB_OUTPUT
-        touch release.txt
+    
+        echo "📦 OpenWrt Firmware Release" > release.txt
+        echo "🕒 Build Date: $(date '+%Y-%m-%d %H:%M')" >> release.txt
+        echo "🖥️ Device: ${{ env.DEVICE_NAME }}" >> release.txt
+        echo "🔧 Config: $CONFIG_FILE" >> release.txt
+        echo "📁 Target: $(cd openwrt/bin/targets/*/* && pwd)" >> release.txt
+        echo "✅ Built by GitHub Actions on Self-Hosted Runner" >> release.txt
+    
         echo "status=success" >> $GITHUB_OUTPUT
+
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@master
       if: steps.tag.outputs.status == 'success' && !cancelled()
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
@@ -144,4 +152,4 @@ jobs:
         keep_latest: 3
         delete_tags: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
